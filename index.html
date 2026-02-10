@@ -16,18 +16,18 @@
     .card { background:#ffb6c1; padding:45px 35px; border-radius:25px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.25); max-width:90%; position:relative; z-index:1; opacity:0; transform:scale(0.5); transition:opacity 0.8s ease, transform 0.8s ease; overflow: hidden; }
     .card.show { opacity:1; transform:scale(1); }
 
-    h1 { font-size:2.6rem; margin-bottom:15px; background:linear-gradient(90deg,#ff4d6d,#ff758f); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: rainbowText 6s infinite linear; }
+    h1 { font-size:2.6rem; margin-bottom:25px; background:linear-gradient(90deg,#ff4d6d,#ff758f); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: rainbowText 6s infinite linear; }
     @keyframes rainbowText { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
 
     p { margin-bottom:25px; color:#555; font-size:1.3rem; }
 
-    .buttons { display:flex; gap:30px; justify-content:center; margin-top:10px; position:relative; }
+    .buttons { display:flex; gap:50px; justify-content:center; margin-top:20px; position:relative; }
     #yes, #no { font-size:2rem; padding:20px 60px; border-radius:50px; border:none; cursor:pointer; transition:all 0.3s ease; z-index:2; touch-action: manipulation; }
     #yes { background:#ff4d6d; color:white; animation: glow 2s infinite alternate; }
     #yes:hover, #yes:active { transform: scale(1.1); box-shadow:0 0 30px #ff4d6d; }
     @keyframes glow { 0% { box-shadow: 0 0 10px #ff4d6d; } 100% { box-shadow: 0 0 40px #ff758f; } }
 
-    #no { background:#ccc; color:#333; z-index:2; }
+    #no { background:#ccc; color:#333; z-index:2; transition: all 0.016s linear; }
 
     .hearts, .confetti, .kisses, .sparkles, .stars { position:fixed; inset:0; pointer-events:none; overflow:hidden; font-size:40px; z-index:10; }
     .heart, .confetti-piece, .kiss, .sparkle, .star { position:absolute; font-size:40px; animation:floatUp 4s linear forwards; }
@@ -127,24 +127,38 @@
     function startNoToYesAnimation(){
       const yesRect = yesBtn.getBoundingClientRect();
       let progress = 0;
+      const startLeft = noBtn.offsetLeft;
+      const startTop = noBtn.offsetTop;
+      const startBg = {r:204, g:204, b:204};
+      const endBg = {r:255, g:153, b:85};
+      let displayedText = 'No';
+      let textProgress = 0;
       const anim = setInterval(()=>{
-        progress += 0.01;
+        progress += 0.005; // langsamer Übergang
         if(progress>=1){ progress=1; clearInterval(anim);
           noBtn.addEventListener('click', playYesEffects);
-          noBtn.style.cursor='pointer';
-          noBtn.style.zIndex=5;
-          // Für mobile sicherstellen, dass Touch auch funktioniert
           noBtn.addEventListener('touchstart', playYesEffects);
+          noBtn.style.cursor='pointer';
         }
-        const left = yesRect.left*progress + noBtn.offsetLeft*(1-progress);
-        const top = yesRect.top*progress + noBtn.offsetTop*(1-progress);
+        // Smooth Position & Color
+        const left = startLeft + (yesRect.left - startLeft)*progress;
+        const top = startTop + (yesRect.top - startTop)*progress;
         noBtn.style.left = left+'px';
         noBtn.style.top = top+'px';
-        noBtn.style.background = `rgba(${204+(255-204)*progress}, ${204-51*progress}, ${204-119*progress},1)`;
-        noBtn.textContent = progress>0.5?'Yes':'No';
-      },50);
-    }
+        const r = Math.round(startBg.r + (endBg.r - startBg.r)*progress);
+        const g = Math.round(startBg.g + (endBg.g - startBg.g)*progress);
+        const b = Math.round(startBg.b + (endBg.b - startBg.b)*progress);
+        noBtn.style.background = `rgb(${r},${g},${b})`;
 
+        // Langsamer Textwechsel: 0.5s länger
+        textProgress += 0.01;
+        if(textProgress >= 0.85){ displayedText = 'Yes'; }
+        noBtn.textContent = displayedText;
+      },16); // 60fps smooth
+
+      yesBtn.addEventListener('click', playYesEffects);
+      yesBtn.addEventListener('touchstart', playYesEffects);
+    }
   </script>
 
 </body>
