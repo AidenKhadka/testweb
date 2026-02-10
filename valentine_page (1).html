@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>💖 Secret Valentine 💖</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <style>
+    * { box-sizing: border-box; font-family: 'Comic Sans MS', 'Segoe UI', cursive; margin:0; padding:0; }
+    body { height:100vh; display:flex; justify-content:center; align-items:center; background: radial-gradient(circle at top, #ffafbd, #ffc3a0); overflow:hidden; transition: background 10s ease-in-out; }
+
+    #startScreen { position:absolute; inset:0; display:flex; justify-content:center; align-items:center; background:linear-gradient(135deg,#ffb6c1,#ff69b4); cursor:pointer; z-index:5; }
+    #startScreen span { color:#333; font-size:2rem; text-decoration:underline; padding:20px; background:rgba(255,255,255,0.8); border-radius:15px; animation: pulseText 2s infinite; }
+
+    @keyframes pulseText { 0%,100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+
+    .card { background:#ffb6c1; padding:45px 35px; border-radius:25px; text-align:center; box-shadow:0 25px 60px rgba(0,0,0,0.25); max-width:90%; position:relative; z-index:1; opacity:0; transform:scale(0.5); transition:opacity 0.8s ease, transform 0.8s ease; overflow: hidden; }
+    .card.show { opacity:1; transform:scale(1); }
+
+    h1 { font-size:2.6rem; margin-bottom:15px; background:linear-gradient(90deg,#ff4d6d,#ff758f); -webkit-background-clip:text; -webkit-text-fill-color:transparent; animation: rainbowText 6s infinite linear; }
+    @keyframes rainbowText { 0% { background-position: 0% 50%; } 100% { background-position: 100% 50%; } }
+
+    p { margin-bottom:25px; color:#555; font-size:1.3rem; }
+
+    .buttons { display:flex; gap:30px; justify-content:center; margin-top:10px; position:relative; }
+    #yes, #no { font-size:2rem; padding:20px 60px; border-radius:50px; border:none; cursor:pointer; transition:all 0.3s ease; z-index:2; touch-action: manipulation; }
+    #yes { background:#ff4d6d; color:white; animation: glow 2s infinite alternate; }
+    #yes:hover, #yes:active { transform: scale(1.1); box-shadow:0 0 30px #ff4d6d; }
+    @keyframes glow { 0% { box-shadow: 0 0 10px #ff4d6d; } 100% { box-shadow: 0 0 40px #ff758f; } }
+
+    #no { background:#ccc; color:#333; z-index:2; }
+
+    .hearts, .confetti, .kisses, .sparkles, .stars { position:fixed; inset:0; pointer-events:none; overflow:hidden; font-size:40px; z-index:10; }
+    .heart, .confetti-piece, .kiss, .sparkle, .star { position:absolute; font-size:40px; animation:floatUp 4s linear forwards; }
+
+    .pulse-heart { position:absolute; font-size:60px; color:#ff4d6d; opacity:0.7; animation: pulse 1.5s infinite; pointer-events:none; z-index:5; }
+
+    @keyframes floatUp { from { transform:translateY(0) rotate(0deg); opacity:1; } to { transform:translateY(-110vh) rotate(360deg); opacity:0; } }
+    @keyframes pulse { 0% { transform: scale(0.8); opacity:0.6; } 50% { transform: scale(1.2); opacity:1; } 100% { transform: scale(0.8); opacity:0.6; } }
+  </style>
+</head>
+<body>
+
+  <div id="startScreen"><span>Klick mich 💌</span></div>
+
+  <div class="card" id="card">
+    <p>Ich habe eine Frage…</p>
+    <h1>Will you be my Valentine?</h1>
+    <div class="buttons">
+      <button id="yes">Yes</button>
+      <button id="no">No</button>
+    </div>
+  </div>
+
+  <div class="hearts" id="hearts"></div>
+  <div class="confetti" id="confetti"></div>
+  <div class="kisses" id="kisses"></div>
+  <div class="sparkles" id="sparkles"></div>
+  <div class="stars" id="stars"></div>
+
+  <script>
+    const startScreen = document.getElementById('startScreen');
+    const card = document.getElementById('card');
+    const yesBtn = document.getElementById('yes');
+    const noBtn = document.getElementById('no');
+    const hearts = document.getElementById('hearts');
+    const confetti = document.getElementById('confetti');
+    const kisses = document.getElementById('kisses');
+    const sparkles = document.getElementById('sparkles');
+    const stars = document.getElementById('stars');
+
+    setInterval(() => { document.body.style.background = `radial-gradient(circle at top, #ffafbd, #ffc3a0, #ffe0e0, #ffd1dc)`; }, 8000);
+
+    startScreen.addEventListener('click', () => {
+      startScreen.style.opacity = 0;
+      setTimeout(() => {
+        startScreen.style.display = 'none';
+        card.classList.add('show');
+        startNoToYesAnimation();
+      }, 600);
+    });
+
+    function spawn(container, emoji) {
+      const el = document.createElement('div');
+      el.className = emoji === '😘' ? 'kiss' : emoji === '✨' ? 'confetti-piece' : 'heart';
+      el.textContent = emoji;
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.bottom = '-20px';
+      el.style.fontSize = (20 + Math.random()*30) + 'px';
+      container.appendChild(el);
+      setTimeout(() => el.remove(), 4000);
+    }
+
+    function spawnPulseHeart() {
+      const el = document.createElement('div');
+      el.className = 'pulse-heart';
+      el.textContent = '💖';
+      el.style.left = Math.random() * 80 + 10 + 'vw';
+      el.style.top = Math.random() * 60 + 20 + 'vh';
+      card.appendChild(el);
+      setTimeout(() => el.remove(), 2500);
+    }
+
+    function spawnStar() {
+      const el = document.createElement('div');
+      el.className = 'star';
+      el.textContent = '✨';
+      el.style.left = Math.random() * 100 + 'vw';
+      el.style.top = Math.random() * 100 + 'vh';
+      el.style.fontSize = (10 + Math.random()*20) + 'px';
+      stars.appendChild(el);
+      setTimeout(() => el.remove(), 3000);
+    }
+
+    setInterval(spawnStar, 300);
+
+    function playYesEffects(){
+      card.innerHTML = '<h1 id="finalText" style="font-size:3rem; line-height:1.4; color:#ff4d6d; text-shadow:0 3px 12px rgba(0,0,0,0.25);"></h1>';
+      const h1 = document.getElementById('finalText');
+      const text = 'Wusste es doch!';
+      let i = 0;
+      for (let j=0;j<50;j++){
+        setTimeout(()=>{ spawn(hearts,'💖'); spawn(confetti,'✨'); spawn(kisses,'😘'); spawnPulseHeart(); },j*50);
+      }
+      const interval = setInterval(()=>{ h1.textContent += text.charAt(i); i++; if(i>=text.length) clearInterval(interval); },120);
+    }
+
+    function startNoToYesAnimation(){
+      const yesRect = yesBtn.getBoundingClientRect();
+      let progress = 0;
+      const anim = setInterval(()=>{
+        progress += 0.01;
+        if(progress>=1){ progress=1; clearInterval(anim);
+          noBtn.addEventListener('click', playYesEffects);
+          noBtn.style.cursor='pointer';
+          noBtn.style.zIndex=5;
+          // Für mobile sicherstellen, dass Touch auch funktioniert
+          noBtn.addEventListener('touchstart', playYesEffects);
+        }
+        const left = yesRect.left*progress + noBtn.offsetLeft*(1-progress);
+        const top = yesRect.top*progress + noBtn.offsetTop*(1-progress);
+        noBtn.style.left = left+'px';
+        noBtn.style.top = top+'px';
+        noBtn.style.background = `rgba(${204+(255-204)*progress}, ${204-51*progress}, ${204-119*progress},1)`;
+        noBtn.textContent = progress>0.5?'Yes':'No';
+      },50);
+    }
+
+  </script>
+
+</body>
+</html>
